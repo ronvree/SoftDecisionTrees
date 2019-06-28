@@ -1,14 +1,14 @@
+import numpy as np
 import torch
 import torch.optim
 import torch.utils.data
 import torchvision
 import torchvision.transforms as transforms
 
-import numpy as np
 from data_soft_targets import SoftMNIST
 
 
-def get_mnist(soft=False):
+def get_mnist(soft=False, input_dimensions=1):
     shape = w, h = (28, 28)
     classes = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
 
@@ -18,12 +18,18 @@ def get_mnist(soft=False):
     def to_one_hot(y):
         return torch.zeros(len(classes)).scatter_(0, y, 1)
 
-    transform = transforms.Compose([transforms.ToTensor(),
-                                    transforms.Normalize((0.1307,), (0.3081,)),
-                                    transforms.Lambda(flatten),
-                                    ])
+    if input_dimensions == 2:
+        transform = transforms.Compose([transforms.ToTensor(),
+                                        transforms.Normalize((0.1307,), (0.3081,)),
+                                        ])
+        target_transform = None
+    else:
+        transform = transforms.Compose([transforms.ToTensor(),
+                                        transforms.Normalize((0.1307,), (0.3081,)),
+                                        transforms.Lambda(flatten),
+                                        ])
 
-    target_transform = transforms.Lambda(to_one_hot)
+        target_transform = transforms.Lambda(to_one_hot)
 
     if soft:
         trainset = SoftMNIST(root='./data',

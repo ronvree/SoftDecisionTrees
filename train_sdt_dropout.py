@@ -1,24 +1,26 @@
 import argparse
+import pickle
 
-import torch.cuda
 import torch.utils.data
 
 from data import get_mnist
-from sdt_frosst_hinton_incomplete import SoftDecisionTree
+from sdt_dropout import SDTDropout
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='SoftDecisionTree on MNIST')
+    parser = argparse.ArgumentParser(description='SoftDecisionTree with dropout on MNIST')
     parser.add_argument('--batch_size', type=int, default=64)
-    parser.add_argument('--depth', type=int, default=8)
-    parser.add_argument('--epochs', type=int, default=10)
+    parser.add_argument('--depth', type=int, default=7)
+    parser.add_argument('--epochs', type=int, default=100)
     parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--momentum', type=float, default=0.5)
+    parser.add_argument('--lamb', type=float, default=0.1)
+    parser.add_argument('--dropout', type=float, default=0.1)
     parser.add_argument('--disable-cuda', action='store_true',
                         help='Disable CUDA')
     parser.add_argument('--soft', action='store_true',
                         help='Enable soft targets')
-    parser.add_argument('--log_interval', type=int, default=10)  # TODO -- not supported yet
+    parser.add_argument('--log_interval', type=int, default=20)
 
     args = parser.parse_args()
     cuda = not args.disable_cuda and torch.cuda.is_available()
@@ -38,15 +40,15 @@ if __name__ == '__main__':
                                              pin_memory=cuda
                                              )
 
-    tree = SoftDecisionTree(k=len(classes),
-                            in_features=w * h,
-                            args=args
-                            )
+    tree = SDTDropout(k=len(classes),
+                      in_features=w * h,
+                      args=args
+                      )
 
     if cuda:
         tree.cuda()
 
-    optimizer = torch.optim.SGD(tree.parameters(), lr=args.lr, momentum=args.momentum)
+    optimizer = torch.optim.SGD(tree.parameters(), args.lr, args.momentum)
 
     for epoch in range(1, args.epochs + 1):
         tree.train()
@@ -60,17 +62,18 @@ if __name__ == '__main__':
             loss.backward()
             optimizer.step()
 
-            ys_true = torch.argmax(y_batch, dim=1)
-            ys_pred = torch.argmax(out, dim=1)
-            correct = torch.sum(torch.eq(ys_pred, ys_true))
+            if i % args.log_interval == 0:
+                ys_true = torch.argmax(y_batch, dim=1)
+                ys_pred = torch.argmax(out, dim=1)
+                correct = torch.sum(torch.eq(ys_pred, ys_true))
 
-            print('Epoch: {:3d}, Batch {:3d}/{}, Loss: {:.5f}, Accuracy: {:.5f}'.format(
-                epoch,
-                i,
-                len(trainloader),
-                loss.item(),
-                correct.item() / len(x_batch))
-            )
+                print('Epoch: {:3d}, Batch {:3d}/{}, Loss: {:.5f}, Accuracy: {:.5f}'.format(
+                    epoch,
+                    i,
+                    len(trainloader),
+                    loss.item(),
+                    correct.item() / len(x_batch))
+                )
 
         tree.eval()
         correct, total = 0, 0
@@ -85,3 +88,5 @@ if __name__ == '__main__':
 
         print('Accuracy: {}\n\n\n\n'.format(correct / total))
 
+        with open('tree_d{}_{}.pickle'.format(args.depth, epoch), 'wb') as f:
+            pickle.dump(tree, f)

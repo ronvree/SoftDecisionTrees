@@ -1,14 +1,10 @@
-import torch
-import torch.cuda
-import torch.optim
-import torch.utils.data
-
 import argparse
 import pickle
 
-from sdt_frosst_hinton import SoftDecisionTree
-from data import get_mnist
+import torch.utils.data
 
+from data import get_mnist
+from sdt_frosst_hinton import SoftDecisionTree
 
 if __name__ == '__main__':
 
@@ -19,13 +15,16 @@ if __name__ == '__main__':
     parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--momentum', type=float, default=0.5)
     parser.add_argument('--lamb', type=float, default=0.1)
-    parser.add_argument('--disable_cuda', type=bool, default=True)
+    parser.add_argument('--disable-cuda', action='store_true',
+                        help='Disable CUDA')
+    parser.add_argument('--soft', action='store_true',
+                        help='Enable soft targets')
     parser.add_argument('--log_interval', type=int, default=20)
 
     args = parser.parse_args()
     cuda = not args.disable_cuda and torch.cuda.is_available()
 
-    trainset, testset, classes, shape = get_mnist()
+    trainset, testset, classes, shape = get_mnist(soft=args.soft)
     w, h = shape
 
     trainloader = torch.utils.data.DataLoader(trainset,
@@ -48,7 +47,7 @@ if __name__ == '__main__':
     if cuda:
         tree.cuda()
 
-    optimizer = torch.optim.SGD(tree.parameters(), lr=0.01, momentum=0.5)
+    optimizer = torch.optim.SGD(tree.parameters(), lr=args.lr, momentum=args.momentum)
 
     for epoch in range(1, args.epochs + 1):
         tree.train()

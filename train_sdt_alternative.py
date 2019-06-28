@@ -1,10 +1,7 @@
-import torch
-import torch.cuda
-import torch.optim
-import torch.utils.data
-
 import argparse
 import pickle
+
+import torch.utils.data
 
 from data import get_mnist
 from sdt_alternative import SoftDecisionTree
@@ -18,7 +15,10 @@ if __name__ == '__main__':
     parser.add_argument('--momentum', type=float, default=0.5)
     parser.add_argument('--lamb', type=float, default=0.1)
     parser.add_argument('--gamma', type=float, default=0.001)
-    parser.add_argument('--disable_cuda', type=bool, default=True)
+    parser.add_argument('--disable-cuda', action='store_true',
+                        help='Disable CUDA')
+    parser.add_argument('--soft', action='store_true',
+                        help='Enable soft targets')
     parser.add_argument('--log_interval', type=int, default=20)
     parser.add_argument('--test_interval', type=int, default=1)
 
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     cuda = not args.disable_cuda and torch.cuda.is_available()
     device = torch.device('cuda' if cuda else 'cpu')
 
-    trainset, testset, classes, shape = get_mnist(soft=True)
+    trainset, testset, classes, shape = get_mnist(soft=args.soft)
     w, h = shape
 
     trainloader = torch.utils.data.DataLoader(trainset,

@@ -1,4 +1,7 @@
 # SoftDecisionTrees
+
+![](https://user-images.githubusercontent.com/9333991/60334846-c1fc5c00-999c-11e9-8531-2a2a7daa4968.PNG)
+
 Code used during our REDI research project. Includes a Soft Decision Tree implementation as described in 'Distilling a Neural Network Into a Soft Decision Tree' by Nicholas Frosst and Geoffrey Hinton of the Google Brain Team, together with variants on this model as described in our research paper. Everything is implemented in PyTorch.
 
 TLDR; all files that start with 'train_' can be run to train/test the corresponding Soft Decision Tree models.

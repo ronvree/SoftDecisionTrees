@@ -38,6 +38,11 @@ class TreeVis:
         BEFORE THE HAND-IN DEADLINE. WE DO KNOW FOR SURE THAT THIS BUG DID NOT AFFECT THE RESULTS DESCRIBED IN THE PAPER
         AS THE VISUALIZATIONS WERE NOT USED THERE.
         TODO - fix
+
+        Once the .dot files are generated, they can be converted to images using Graphviz with the following command:
+
+            dot -Tpng <filename>.dot -O
+
         """
         self.tree = tree
         self.k = tree.k  # Number of output classes

@@ -1,6 +1,12 @@
 import numpy as np
+import os
 
 from PIL import Image
+
+try:
+    os.makedirs('./node_vis')
+except:
+    print('directory ./node_vis already exists')
 
 
 class VisNode:

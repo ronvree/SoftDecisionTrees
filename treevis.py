@@ -29,7 +29,8 @@ class TreeVis:
                             passed through the model. The weight vectors need to be reshaped to the image size
 
         IMPORTANT NOTE -- GENERATING A TREE VISUALISATION BREAKS THE TREE. THIS IS A BUG WE FOUND ON VERY SHORT NOTICE
-        BEFORE THE HAND-IN DEADLINE
+        BEFORE THE HAND-IN DEADLINE. WE DO KNOW FOR SURE THAT THIS BUG DID NOT AFFECT THE RESULTS DESCRIBED IN THE PAPER
+        AS THE VISUALIZATIONS WERE NOT USED THERE.
         TODO - fix
         """
         self.tree = tree

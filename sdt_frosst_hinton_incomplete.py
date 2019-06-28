@@ -22,6 +22,8 @@ class SoftDecisionTree(torch.nn.Module, VisTree):
         However, this version was kept as it is a simpler variant of SDTs which makes it more readable. The complete
         version is pretty much the same, but some properties need to be kept track of during the forward pass of the
         model, thus adding a layer of complexity to the code.
+
+        This version has not been used during our research, but has been added for code readability.
     """
 
     # Inverse temperature parameter that is multiplied with all decision node filters

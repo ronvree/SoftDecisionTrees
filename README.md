@@ -33,3 +33,7 @@ train_sdt_frosst_hinton_incomplete.py - code used to train the incomplete versio
 train_sdt_dropout.py - code used to train the Soft Decision Tree with dropout regularization.
 
 train_sdt_alternative.py - code with alternative training procedure for the tree implemented in sdt_alternative.py
+
+
+This implementation is compatible with PyTorch version 1.0.1 and TorchVision version 0.2.1
+
